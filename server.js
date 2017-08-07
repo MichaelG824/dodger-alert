@@ -3,20 +3,45 @@ var bodyparser = require('body-parser');
 var session = require('express-session');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
-var mlb = require('mlb-scores');
+//Get all MLB data.
+var gamedayHelper = require('gameday-helper');
 
-//Error handle: 
-//It is behind 3 games.
-mlb.getGameUrl('dodgers', new Date(2017,8,9), function(err, url){
-  if (!err){
-    mlb.getGameInfo(url, function(err, data){
-      if(err)
-          throw err;
-          
-      console.log(JSON.stringify(data, null, 4));
-    });
+//Help get the date for the gameDayHelper.
+var date = new Date();
+console.log("Wow: ", date);
+
+//For testing purposes
+//'8/8/17'
+gamedayHelper.masterScoreboard( new Date(date))
+.then( function( data ){
+  // Array of objects with data related to a single game
+  console.log("Issa wow",date);
+  console.log(data.game[0].home_team_name);
+  console.log(data.game[0].away_team_name);
+  
+  var index =-1;
+  for(var count = 0; count < data.game.length; count++)
+  {
+      if(data.game[count].home_team_name=="Dodgers" || data.game[count].away_team_name=="Dodgers")
+      {
+          index = count;
+      }
   }
+  
+  if(index > -1)
+  {
+      console.log("We have a dodger game");
+  }else {
+      console.log("No game to be found.");
+  }
+  
+  
+  
+})
+.catch( function( error ) {
+  console.log( error );
 });
+
 
 //Setup express app.
 var app = express();
