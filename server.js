@@ -6,8 +6,7 @@ var cookieParser = require('cookie-parser');
 
 //YOU NEED TO DELETE THIS BEFORE PUSHING 
 //***********TWILIO CONFIG****************************
-const accountSid = 'AC2394ac048859f6b48e7cdf630c29e631';
-const authToken = 'e5e14360709c8b0f598c7a9053d87557';
+
 const twilio = require('twilio')(accountSid, authToken);
 //***********************************************
 
