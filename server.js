@@ -4,41 +4,34 @@ var session = require('express-session');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 
-
 //YOU NEED TO DELETE THIS BEFORE PUSHING 
 //***********TWILIO CONFIG****************************
-
+const accountSid = 'AC2394ac048859f6b48e7cdf630c29e631';
+const authToken = 'e5e14360709c8b0f598c7a9053d87557';
 const twilio = require('twilio')(accountSid, authToken);
 //***********************************************
 
-console.log(twilio);
-
-
-twilio.messages.create({
-  from: '+13236010551',
-  to: '+18184278207',
-  body: "Free breezy hoe"
-}, function(err, message) {
-  if(err) {
-    console.error(err.message);
-  }
-});
-
-//Get all MLB data.
+//Module to get all gameday data.
 var gamedayHelper = require('gameday-helper');
 
 //Help get the date for the gameDayHelper.
 var date = new Date();
-console.log("Wow: ", date);
+
+var CronJob = require('cron').CronJob;
+
+var currenthour = 0;
+new CronJob('* * * * * *', function() {
+    currenthour = date.getHours();
+    console.log(currenthour);
+}, null, true, 'America/Los_Angeles');
+
 
 //For testing purposes
 //'8/8/17'
+//Get gameday data.
 gamedayHelper.masterScoreboard( new Date(date))
 .then( function( data ){
   // Array of objects with data related to a single game
-  console.log("Issa wow",date);
-  console.log(data.game[0].home_team_name);
-  console.log(data.game[0].away_team_name);
   
   var index =-1;
   
@@ -52,9 +45,19 @@ gamedayHelper.masterScoreboard( new Date(date))
   
   if(index > -1)
   {
-      console.log("We have a dodger game");
-  }else {
-      console.log("No game to be found.");
+      
+  }
+  else 
+  {
+     /* twilio.messages.create({
+        from: '+13236010551',
+        to: '+18184278207',
+        body: "The Dodgers are not playing today!"
+      }, function(err, message) {
+        if(err) {
+          console.error(err.message);
+        }
+      }); */
   }
   
   
