@@ -3,8 +3,11 @@ var bodyparser = require('body-parser');
 var session = require('express-session');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
+var passport = require('passport');
+var flash = require('connect-flash');
 
-//YOU NEED TO DELETE THIS BEFORE PUSHING 
+
+//YOU NEED TO SAVE AND DELETE THIS BEFORE PUSHING 
 //***********TWILIO CONFIG****************************
 
 const twilio = require('twilio')(accountSid, authToken);
@@ -24,7 +27,7 @@ new CronJob('* * * * * *', function() {
     console.log(currenthour);
 }, null, true, 'America/Los_Angeles');
 
-
+console.log(currenthour);
 //For testing purposes
 //'8/8/17'
 //Get gameday data.
@@ -70,6 +73,15 @@ gamedayHelper.masterScoreboard( new Date(date))
 //Setup express app.
 var app = express();
 
+//Setup route variable.
+var route = require('./routes/routes.js')(passport);
+
+//Route middleware.
+app.use(route);
+
+
+//set up template engine 
+app.set('view engine', 'ejs');
 
 //Middleware
 app.use(morgan('dev'));
