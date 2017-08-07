@@ -4,6 +4,8 @@ var session = require('express-session');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 
+
+//YOU NEED TO DELETE THIS BEFORE PUSHING 
 //***********TWILIO CONFIG****************************
 const accountSid = 'AC2394ac048859f6b48e7cdf630c29e631';
 const authToken = '7746ed52d16e0f369aa2de3dfcf81940';
