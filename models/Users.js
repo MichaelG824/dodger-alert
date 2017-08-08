@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 
 //Create user schema 
 const UserSchema = new Schema ({
-    name: String,
     username: { type: String, unique:true },
     password: {type:String},
     phonenumber: Number,

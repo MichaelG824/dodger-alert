@@ -21,44 +21,7 @@ module.exports = function(passport)
             done(err,user);
         });
     });
-    
-    //***********************SIGNUP FUNCTION **************************************
-    passport.use('local-register', new localStrategy({
-		usernameField: 'username',
-		passwordField: 'password',
-		passReqToCallback: true
-	},
-	
-	//Process the username. 
-	//If it already exists, return user name already taken to the front end. 
-	//Otherwise, register to data base.
-	function(req, username, password, done){
-		process.nextTick(function(){
-			User.findOne({'username': username}, function(err, user){
-				if(err)
-					return done(err);
-				if(user){
-					return done(null, false, req.flash('signupMessage', 'That username already taken'));
-				} else {
-					var newUser = new User();
-					newUser.username = username;
-					newUser.password = newUser.generateHash(password);
 
-					newUser.save(function(err){
-						if(err)
-							throw err;
-						return done(null, newUser);
-					});
-				}
-			});
-
-		});
-	}));
-	//****************************************************************
-    
-    
-    
-    
     
     
     //************DELETE REQUEST**********************************

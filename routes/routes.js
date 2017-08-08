@@ -4,11 +4,12 @@ module.exports = function(passport)
     const moment = require('moment');
     const bodyParser = require('body-parser');
     
-    //Used for parsing body when inputting data.
+   
+    var router = require('express').Router();
+    
+     //Used for parsing body when inputting data.
     router.use(bodyParser.urlencoded({ extended: true }));
     router.use(bodyParser.json());
-    
-    var router = require('express').Router();
     
     //user model.
     const User = require('../models/Users.js');
@@ -37,11 +38,59 @@ module.exports = function(passport)
     });
     
     //Create user for the app.
-    router.post('/signup', passport.authenticate('local-register',{
-        successRedirect:'/dashboard',
-        failureRedirect:'/signup',
-        failureFlash:true
-    }));
+    router.post('/signup', function(req,res)
+    {
+        console.log("Hit 1");
+        var username = req.body.username;
+        var phonenumber = req.body.phonenumber;
+        var password = req.body.password;
+        
+        console.log(username);
+        console.log(password);
+        console.log(phonenumber);
+        
+        //If phone number is in database. 
+        //Say to user that it already exists.
+        User.findOne({phonenumber:phonenumber}).then(function(result){
+            if(result)
+            {
+                console.log("Found phone number")
+                 //Change this.
+                res.json({status:"Success", redirect:'/signup'});
+            }
+        });
+        
+        //If the user exists, send that it already exists.
+        //Otherwise save in database.
+        User.findOne({username: username}).then(function(user){
+			if(user)
+			{
+			    res.send("User already exists try again.");
+			} 
+			else 
+			{
+				var newUser = new User();
+				newUser.username = username;
+				newUser.password = newUser.generateHash(password);
+                newUser.phonenumber = phonenumber;
+                
+                //Save user.
+				newUser.save(function(err)
+				{
+					if(err)
+					{
+					    console.log(err);
+					    throw err;
+					}
+					
+					
+				});
+				
+			}
+		});
+		console.log("Hit 2");
+		res.json({status:"Success", redirect:'/dashboard'});
+    });
 //******************************************************************    
     
     
@@ -53,7 +102,7 @@ module.exports = function(passport)
 //*********************DELETE PAGE *********************************    
     //Get deletion page.
     router.get('/delete', function(req,res){
-        res.render('signup', {message: req.flash('deleteMessage')});
+        res.render('delete', {message: req.flash('deleteMessage')});
     });
     
     //Delete user from app.
@@ -166,6 +215,7 @@ module.exports = function(passport)
                     }
                     else{
                         console.log(result);
+                         res.json({status:"Success", redirect: '/'});
                     }
                 });
             }
