@@ -5,9 +5,20 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var flash = require('connect-flash');
+var mongoose = require('mongoose');
+
+//Usage of passport
+require('./config/passport')(passport);
+
+//Connect to database.
+mongoose.connect('mongodb://test:test@ds137220.mlab.com:37220/fast-food-data');
+
+//ES6 promises
+mongoose.Promise = global.Promise;
 
 
-//YOU NEED TO SAVE AND DELETE THIS BEFORE PUSHING 
+//YOU NEED TO SAVE AND DELETE THIS BEFORE PUSHING
+//Change for publication. **********************!IMPORTANT********************
 //***********TWILIO CONFIG****************************
 
 const twilio = require('twilio')(accountSid, authToken);
