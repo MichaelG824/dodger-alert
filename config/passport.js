@@ -40,24 +40,29 @@ module.exports = function(passport)
 	           
 	           else if(!user)
 	           {
+	               console.log("Fail 1");
 	               return done(null, false, req.flash('deleteMessage', 'Sorry that username does not exist.'));
 	           }
 	           else if(!user.validPassword(password))
 	           {
+	               console.log("Fail 2");
 				   return done(null, false, req.flash('deleteMessage', 'Inavalid password. Please try again.'));
 			   }
 	           else
 	           {
 	                User.findOneAndRemove({'username': username}, function(err,result)
 	                {
+	                    console.log("Removed it");
 	                    if(err)
 	                    {
+	                        console.log("Error");
 	                        return done(err);
 	                    }
+	                    console.log("Remove");
 	                    return done(null, result);
 	                });
 	           }
-	           
+	           console.log("Foshizzle");
 	       });
 	   });
     }));

@@ -9,7 +9,18 @@
     
     
     <body>
-    	<form>
+        
+    
+<div class="container">
+
+<div class="col-sm-6 col-sm-offset-3">
+        <!-- show any messages that come back with authentication -->
+	<% if (message.length > 0) { %>
+		<div class="alert alert-danger"><%= message %></div>
+	<% } %>
+	
+	
+    	<form action="/delete" method="post">
     	    <h1>Delete your account.</h1>
     		<div class="form-group">
     			<label>Username</label>
@@ -24,7 +35,8 @@
     	<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>	
         <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <script src="js/frontend.js"></script>
-    
+</div>
+</div>
     </body>
     
 </html>

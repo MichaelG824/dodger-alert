@@ -25,7 +25,8 @@ module.exports = function(passport)
     });
     
     //Get delete dashboard
-    router.get('/dashboard', function(req,res){
+    router.get('/deldashboard', function(req,res){
+        console.log("Hit delete");
         res.render('deldashboard');
     });
     
@@ -71,7 +72,7 @@ module.exports = function(passport)
 			{
 				var newUser = new User();
 				newUser.username = username;
-				newUser.password = newUser.generateHash(password);
+				newUser.password = password;
                 newUser.phonenumber = phonenumber;
                 
                 //Save user.
@@ -97,127 +98,52 @@ module.exports = function(passport)
     
     
     
-    
+    //req.flash('deleteMessage')
     
 //*********************DELETE PAGE *********************************    
     //Get deletion page.
     router.get('/delete', function(req,res){
-        res.render('delete', {message: req.flash('deleteMessage')});
+        res.render('delete', {message:req.flash('deleteMessage')});
     });
     
     //Delete user from app.
-    router.delete('/delete', passport.authenticate('local-deletion',{
+    router.post('/delete', passport.authenticate('local-deletion',{
         successRedirect:'/deldashboard',
         failureRedirect:'/delete',
         failureFlash:true
     }));
 //*******************************************************************
 
- /*
-    passport.use('local-register', new localStrategy({
-		usernameField: 'username',
-		passwordField: 'password',
-		passReqToCallback: true
-	},
-	
-	//Process the username. 
-	//If it already exists, return user name already taken to the front end. 
-	//Otherwise, register to data base.
-	function(req, username, password, done){
-		process.nextTick(function(){
-			User.findOne({'username': username}, function(err, user){
-				if(err)
-					return done(err);
-				if(user){
-					return done(null, false, req.flash('signupMessage', 'That username already taken'));
-				} else {
-					var newUser = new User();
-					newUser.username = username;
-					newUser.password = newUser.generateHash(password);
 
-					newUser.save(function(err){
-						if(err)
-							throw err;
-						return done(null, newUser);
-					});
-				}
-			});
-
-		});
-	}));
-*/
-/*
- passport.use('local-deletion', new localStrategy({
-		usernameField: 'username',
-		passwordField: 'password',
-		passReqToCallback: true
-	},
-	function(req, username, password, done){
-	   process.nextTick(function()
-	   {
-	       User.findOne({'username': username}, function(err,user)
-	       {
-	           if(err)
-	               return done(err);
-	           
-	           else if(!user)
-	           {
-	               return done(null, false, req.flash('deleteMessage', 'Sorry that username does not exist.'));
-	           }
-	           else if(!user.validPassword(password))
-	           {
-				   return done(null, false, req.flash('deleteMessage', 'Inavalid password. Please try again.'));
-			   }
-	           else
-	           {
-	                User.findOneAndRemove({'username': username}, function(err,result)
-	                {
-	                    if(err)
-	                    {
-	                        return done(err);
-	                    }
-	                    return done(null, result);
-	                });
-	           }
-	           
-	       });
-	   });
-    }));
-    */
-
-
-//****************FORGET PAGE PUT REQUEST*****************************************
+//****************FORGET PAGE*****************************************
     //Get Forget your password page.
     router.get('/forgot', function(req,res){
-        res.render('signup', {message: req.flash('forgotMessage')});
+        res.render('forgot', {message: req.flash('forgotMessage')});
     });
     
     //Update the password. 
-    router.put('/forgot',function(req,res) 
+    router.post('/forgot',function(req,res) 
     {
-        var oldPassword = req.body.oldPassword;
-        var newPassword = req.body.newPassword;
+        var oldPassword = req.body.oldpassword;
+        var newPassword = req.body.newpassword;
         var username = req.body.username;
+        console.log(oldPassword);
         
         User.findOne({username:username,password:oldPassword}).then(function(result)
         {
+            console.log(result);
             if(!result)
             {
+                console.log("Cannot find");
                 res.json({status:"Success", redirect: '/forgot'});
             }
             else 
             {
-                User.findOneAndUpdate({password:oldPassword}, {password: newPassword}).then(function(err,result)
+                User.findOneAndUpdate({password:oldPassword}, {password: newPassword}).then(function(result)
                 {
-                    if(err)
-                    {
-                        throw err;
-                    }
-                    else{
-                        console.log(result);
-                         res.json({status:"Success", redirect: '/'});
-                    }
+                    console.log(result);
                 });
+                res.json({status:"Success", redirect: '/'});
             }
         });
     });
