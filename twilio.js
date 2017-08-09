@@ -6,21 +6,17 @@ const authToken = 'e5e14360709c8b0f598c7a9053d87557';
 const twilio = require('twilio')(accountSid, authToken);
 //***********************************************
 
+var time = require('time');
+var now = new time.Date();
+
+now.setTimezone("America/Los_Angeles");
+
 //Module to get all gameday data.
 var gamedayHelper = require('gameday-helper');
 
 //Help get the date for the gameDayHelper.
 var date = new Date();
 
-var CronJob = require('cron').CronJob;
-
-/*var currenthour = 0;
-new CronJob('* * * * * *', function() {
-    currenthour = date.getHours();
-    console.log(currenthour);
-}, null, true, 'America/Los_Angeles');*/
-
-//console.log(currenthour);
 //For testing purposes
 //'8/8/17'
 //Get gameday data.
@@ -40,11 +36,15 @@ gamedayHelper.masterScoreboard( new Date(date))
   
   if(index > -1)
   {
-      
+      //Get 24:00 time
+      var time = now.getHours() + ':' + now.getMinutes();
+      //Parse it into a new variable.
+      var newtime = parseTime(time);
+      console.log(newtime);
   }
   else 
   {
-     /* twilio.messages.create({
+      twilio.messages.create({
         from: '+13236010551',
         to: '+18184278207',
         body: "The Dodgers are not playing today!"
@@ -52,7 +52,7 @@ gamedayHelper.masterScoreboard( new Date(date))
         if(err) {
           console.error(err.message);
         }
-      }); */
+      }); 
   }
   
   
@@ -61,3 +61,16 @@ gamedayHelper.masterScoreboard( new Date(date))
 .catch( function( error ) {
   console.log( error );
 });
+
+function parseTime(time)
+{
+    // Check correct time format and split into components
+  time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+  if (time.length > 1) { // If time format correct
+    time = time.slice (1);  // Remove full string match value
+    time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+    time[0] = +time[0] % 12 || 12; // Adjust hours
+  }
+  return time.join (''); // return adjusted time or original string
+}
