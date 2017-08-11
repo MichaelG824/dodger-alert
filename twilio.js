@@ -1,66 +1,177 @@
 //YOU NEED TO SAVE AND DELETE THIS BEFORE PUSHING
 //Change for publication. **********************!IMPORTANT********************
 //***********TWILIO CONFIG****************************
-
+const accountSid = 'AC2394ac048859f6b48e7cdf630c29e631';
+const authToken = 'e5e14360709c8b0f598c7a9053d87557';
 const twilio = require('twilio')(accountSid, authToken);
 //***********************************************
 
+//***************GET INSTANT TIME******************
 var time = require('time');
 var now = new time.Date();
-
 now.setTimezone("America/Los_Angeles");
+//*************************************************
+
+
+
+//*************GET INSTANT DATE ******************
+var date = new Date();
+var utcDate = new Date(date.toUTCString());
+utcDate.setHours(utcDate.getHours()-8);
+var usDate = new Date(utcDate);
+
+//Get the right string for date.
+var string = usDate.toLocaleDateString();
+//*************************************************
+
+//User schema 
+const Users = require('./models/Users.js');
+
 
 //Module to get all gameday data.
 var gamedayHelper = require('gameday-helper');
 
-//Help get the date for the gameDayHelper.
-var date = new Date();
-
-//For testing purposes
-//'8/8/17'
-//Get gameday data.
-gamedayHelper.masterScoreboard( new Date(date))
-.then( function( data ){
-  // Array of objects with data related to a single game
-  
-  var index =-1;
-  
-  for(var count = 0; count < data.game.length; count++)
-  {
-      if(data.game[count].home_team_name=="Dodgers" || data.game[count].away_team_name=="Dodgers")
-      {
-          index = count;
-      }
-  }
-  
-  if(index > -1)
-  {
+//Check the time of the Dodger game to see if it needs a reminder,
+//If they do send notifications.
+var sendNotifications = function()
+{
+    //Get gameday data
+    gamedayHelper.masterScoreboard( new Date(string))
+    .then( function( data )
+    {
+      
       //Get 24:00 time
       var time = now.getHours() + ':' + now.getMinutes();
+      
       //Parse it into a new variable.
       var newtime = parseTime(time);
-      console.log(newtime);
-  }
-  else 
-  {
-      twilio.messages.create({
-        from: '+13236010551',
-        to: '+18184278207',
-        body: "The Dodgers are not playing today!"
-      }, function(err, message) {
-        if(err) {
-          console.error(err.message);
-        }
-      }); 
-  }
-  
-  
-  
-})
-.catch( function( error ) {
-  console.log( error );
-});
+      
+      //Get PM or AM 
+      var meridian = newtime.substring(4);
+      
+      //Get time alone
+      var time = newtime.substring(0,4);
+      
+      var index =-1;
+      
+      //Iterate through and find the Dodger game. 
+      for(var count = 0; count < data.game.length; count++)
+      {
+          if(data.game[count].home_team_name=="Dodgers" || data.game[count].away_team_name=="Dodgers")
+          {
+              index = count;
+          }
+      }
+      
+      //Found the dodger game 
+      if(index > -1)
+      {
+          
+          
+          //Send message on game time. 
+          if((data.game[index].home_time == time) && meridian == "PM")
+          {
+              var body = "";
+              
+              body += data.game[index];
+              
+              Users.find().forEach(function(user)
+              {
+                  
+                  const options = 
+                  {
+                      to: `+ ${user.phonenumber}`,
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                  twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  });
+                  
+              }); 
+          }
+          
+          //After game ends, send final score
+          else if(true)
+          {
+              
+          }
+          
+      }
+      
+      //If no dodger game, tell user there is none.
+      else
+      {
+          //Send message at 2 pm.
+          if(("2:00" == time) && meridian == "PM")
+          {
+              var body = "There's no Dodger game today!";
+              
+              Users.find().forEach(function(user)
+              {
+                  
+                  const options = 
+                  {
+                      to: `+ ${user.phonenumber}`,
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                  twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  });
+                  
+              });      
+          }
+      }
+      
+    //********END************  
+    
+    
+     var body = "";
+              
+              body += data.game[index];
+              
+              console.log(body);
+             
+                  
+                  const options = 
+                  {
+                      to: '8184278207',
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                 /* twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  }); */
+    })
+    .catch( function( error ) {
+      console.log( error );
+    });
+}
 
+
+
+
+
+//Parse the time function.
 function parseTime(time)
 {
     // Check correct time format and split into components
@@ -73,3 +184,7 @@ function parseTime(time)
   }
   return time.join (''); // return adjusted time or original string
 }
+
+
+//Export it.
+module.exports = sendNotifications;

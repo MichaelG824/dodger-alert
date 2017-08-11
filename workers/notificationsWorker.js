@@ -1,14 +1,14 @@
 'use strict';
 
-const User = require('../models/Users.js');
+const notifyFunction = require('./twilio.js');
 
 //Run send notifications function.
 const notificationWorkerFactory = function() {
   return {
     run: function() {
-      User.sendNotifications();
+        notifyFunction();
     },
   };
 };
 
-module.exports = notificationWorkerFactory();
+module.exports = notificationWorkerFactory;
