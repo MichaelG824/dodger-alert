@@ -170,6 +170,167 @@ var sendNotifications = function()
 
 
 
+//*************************FOR TESTING PURPOSES************************************
+
+ //Get gameday data
+    gamedayHelper.masterScoreboard( new Date(string))
+    .then( function( data )
+    {
+      
+      //Get 24:00 time
+      var time = now.getHours() + ':' + now.getMinutes();
+      
+      //Parse it into a new variable.
+      var newtime = parseTime(time);
+      
+      //Get PM or AM 
+      var meridian = newtime.substring(4);
+      
+      //Get time alone
+      var time = newtime.substring(0,4);
+      
+      var index =-1;
+      
+      //Iterate through and find the Dodger game. 
+      for(var count = 0; count < data.game.length; count++)
+      {
+          if(data.game[count].home_team_name=="Dodgers" || data.game[count].away_team_name=="Dodgers")
+          {
+              index = count;
+          }
+      }
+      
+      //Found the dodger game 
+      if(index > -1)
+      {
+          
+          
+          //Send message on game time. 
+          if((data.game[index].home_time == time && meridian == "PM") && (data.game[index].home_team_name == "Dodgers") || (data.game[index].away_time == time && meridian == "PM") && (data.game[index].away_team_name == "Dodgers"))
+          {
+              var body = "";
+              
+              body += data.game[index];
+              
+              Users.find().forEach(function(user)
+              {
+                  
+                  const options = 
+                  {
+                      to: `+ ${user.phonenumber}`,
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                  twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  });
+                  
+              }); 
+          }
+          
+          //After game ends, send final score
+          else if(true)
+          {
+              
+          }
+          
+      }
+      
+      //If no dodger game, tell user there is none.
+      else
+      {
+          //Send message at 2 pm.
+          if(("2:00" == time) && meridian == "PM")
+          {
+              var body = "There's no Dodger game today!";
+              
+              Users.find().forEach(function(user)
+              {
+                  
+                  const options = 
+                  {
+                      to: `+ ${user.phonenumber}`,
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                  twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  });
+                  
+              });      
+          }
+      }
+      
+    //********END************  
+    
+    
+    
+              //**************PRE-GAME INFO***********************
+              var stadium =  data.game[index].venue;
+              var tv = data.game[index].broadcast.home.tv;
+              var homepitcher = data.game[index].home_probable_pitcher.name_display_roster;
+              var awaypitcher = data.game[index].away_probable_pitcher.name_display_roster;
+              var awaythrowinghand = data.game[index].away_probable_pitcher.throwinghand;
+              var homethrowinghand = data.game[index].home_probable_pitcher.throwinghand;
+              var homewins = data.game[index].home_probable_pitcher.wins;
+              var awaywins = data.game[index].away_probable_pitcher.wins;
+              var homelosses = data.game[index].home_probable_pitcher.losses;
+              var awaylosses = data.game[index].away_probable_pitcher.losses;
+              var hometeam = data.game[index].home_team_name;
+              var awayteam = data.game[index].away_team_name;
+              var homeera = data.game[index].home_probable_pitcher.era;
+              var awayera = data.game[index].away_probable_pitcher.era;
+             //**********************************************
+              console.log(data.game[index].away_probable_pitcher.era);
+               var body = "";
+               
+               body += "\n\n\n";
+               body += "     "  + hometeam + "  VS  " + awayteam + "\n";
+               
+               body += "TV: " + tv + "\n";
+               body += "     @  " + stadium + "\n";
+               body += "-------------------------------\n"
+               body += "SP:   " + homepitcher + "    " + awaypitcher + "\n";
+               body += "R/L:    " + homethrowinghand + "        " + awaythrowinghand + "\n";
+               body += "W-L:   " + homewins + "-" + homelosses + "       " + awaywins + "-" + awaylosses + "\n";
+               body += "ERA:   " + homeera + "       " + awayera;
+               body += "        ";
+               console.log(body);
+                  const options = 
+                  {
+                      to: '8184278207',
+                      from: '+13236010551',
+                      body: body,
+                  }
+                  
+                  //Create message 
+                  twilio.messages.create(options, function(err,message)
+                  {
+                      if(err)
+                        console.log(err);
+                        
+                      console.log(message);
+                  }); 
+    })
+    .catch( function( error ) {
+      console.log( error );
+    });
+//******************************************************************
+
+
+
 
 //Parse the time function.
 function parseTime(time)
