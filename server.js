@@ -10,11 +10,13 @@ var flash = require('connect-flash');
 //Usage of passport
 require('./config/passport')(passport);
 
+//ES6 promises
+mongoose.Promise = global.Promise;
+
 //Connect to database.
 mongoose.connect('mongodb://test:test@ds137220.mlab.com:37220/fast-food-data');
 
-//ES6 promises
-mongoose.Promise = global.Promise;
+
 
 var app = express();
 
