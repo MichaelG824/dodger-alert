@@ -27,14 +27,6 @@ var string = usDate.toLocaleDateString();
 //User schema 
 const Users = require('./models/Users.js');
 
-var mongoose = require('mongoose');
-
-//Connect to database.
-mongoose.connect('mongodb://test:test@ds137220.mlab.com:37220/fast-food-data');
-
-//ES6 promises
-mongoose.Promise = global.Promise;
-
 //Module to get all gameday data.
 var gamedayHelper = require('gameday-helper');
 
@@ -121,30 +113,6 @@ var sendNotifications = function()
       }
       
     //********END************  
-    
-    
-     var body = "";
-              
-              body += data.game[index];
-              
-              console.log(body);
-             
-                  
-                  const options = 
-                  {
-                      to: '8184278207',
-                      from: '+13236010551',
-                      body: body,
-                  }
-                  
-                  //Create message 
-                 /* twilio.messages.create(options, function(err,message)
-                  {
-                      if(err)
-                        console.log(err);
-                        
-                      console.log(message);
-                  }); */
     })
     .catch( function( error ) {
       console.log( error );
@@ -328,14 +296,14 @@ var sendNotifications = function()
                           body: body,
                       }
                       
-                      //Create pre-game message and send to all users
-                     /* twilio.messages.create(options, function(err,message)
+                      //Create post-game message and send to all users
+                      twilio.messages.create(options, function(err,message)
                       {
                         if(err)
                           console.log(err);
                           
                         console.log(message);
-                      }); */
+                      }); 
                   }); 
               });
               

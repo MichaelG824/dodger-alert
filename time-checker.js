@@ -8,7 +8,7 @@ const moment = require('moment');
 const timeChecker = function() {
   return {
     start: function() {
-      new CronJob('00 * * * * *', function() {
+      new CronJob('* * * * * *', function() {
         console.log('Running Send Notifications Worker for ' +
           moment().format());
         notificationsForUsers.run();

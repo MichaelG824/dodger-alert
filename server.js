@@ -6,9 +6,12 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var flash = require('connect-flash');
+var timechecker = require('./time-checker');
+
 
 //Usage of passport
 require('./config/passport')(passport);
+
 
 //ES6 promises
 mongoose.Promise = global.Promise;
@@ -51,7 +54,7 @@ app.use(express.static('./client'));
 //middleware for routes
 app.use(route);
 
-
+timechecker.start();
 
 //listen to port
 app.listen(process.env.PORT, process.env.IP, function(){

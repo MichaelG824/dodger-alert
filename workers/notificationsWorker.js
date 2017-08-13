@@ -1,9 +1,10 @@
 'use strict';
 
-const notifyFunction = require('./twilio.js');
+const notifyFunction = require('../twilio.js');
 
+console.log("Hit noti");
 //Run send notifications function.
-const notificationWorkerFactory = function() {
+const notificationForUsers = function() {
   return {
     run: function() {
         notifyFunction();
@@ -11,4 +12,4 @@ const notificationWorkerFactory = function() {
   };
 };
 
-module.exports = notificationWorkerFactory;
+module.exports = notificationForUsers();
