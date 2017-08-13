@@ -72,7 +72,7 @@ module.exports = function(passport)
 			{
 				var newUser = new User();
 				newUser.username = username;
-				newUser.password = password;
+				newUser.password =  newUser.generateHash(password);
                 newUser.phonenumber = phonenumber;
                 
                 //Save user.

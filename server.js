@@ -54,6 +54,7 @@ app.use(express.static('./client'));
 //middleware for routes
 app.use(route);
 
+//Run time checker 
 timechecker.start();
 
 //listen to port

@@ -1,8 +1,8 @@
-//YOU NEED TO SAVE AND DELETE THIS BEFORE PUSHING
-//Change for publication. **********************!IMPORTANT********************
+const config = require('./config.js');
+
 //***********TWILIO CONFIG****************************
-const accountSid = 'AC2394ac048859f6b48e7cdf630c29e631';
-const authToken = 'e5e14360709c8b0f598c7a9053d87557';
+const accountSid = config.TWILIO_ACCOUNT_SID;
+const authToken = config.TWILIO_AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 //***********************************************
 
@@ -35,96 +35,6 @@ var gamedayHelper = require('gameday-helper');
 var sendNotifications = function()
 {
     //Get gameday data
-    gamedayHelper.masterScoreboard( new Date(string))
-    .then( function( data )
-    {
-      
-      //Get 24:00 time
-      var time = now.getHours() + ':' + now.getMinutes();
-      
-      //Parse it into a new variable.
-      var newtime = parseTime(time);
-      
-      //Get PM or AM 
-      var meridian = newtime.substring(4);
-      
-      //Get time alone
-      var time = newtime.substring(0,4);
-      
-      var index =-1;
-      
-      //Iterate through and find the Dodger game. 
-      for(var count = 0; count < data.game.length; count++)
-      {
-          if(data.game[count].home_team_name=="Dodgers" || data.game[count].away_team_name=="Dodgers")
-          {
-              index = count;
-          }
-      }
-      
-      //Found the dodger game 
-      if(index > -1)
-      {
-          
-          
-          //Send message on game time. 
-          if(true)
-          {
-              console.log("Hit first if statement");
-          }
-          
-          //After game ends, send final score
-          else if(true)
-          {
-              
-          }
-          
-      }
-      
-      //If no dodger game, tell user there is none.
-      else
-      {
-          //Send message at 2 pm.
-          if(("2:00" == time) && meridian == "PM")
-          {
-              var body = "There's no Dodger game today!";
-              
-              Users.find().forEach(function(user)
-              {
-                  
-                  const options = 
-                  {
-                      to: `+ ${user.phonenumber}`,
-                      from: '+13236010551',
-                      body: body,
-                  }
-                  
-                  //Create message 
-                  twilio.messages.create(options, function(err,message)
-                  {
-                      if(err)
-                        console.log(err);
-                        
-                      console.log(message);
-                  });
-                  
-              });      
-          }
-      }
-      
-    //********END************  
-    })
-    .catch( function( error ) {
-      console.log( error );
-    });
-}
-
-
-
-
-//*************************FOR TESTING PURPOSES************************************
-
- //Get gameday data
     gamedayHelper.masterScoreboard( new Date(string))
     .then( function( data )
     {
@@ -353,10 +263,7 @@ var sendNotifications = function()
     .catch( function( error ) {
       console.log( error );
     });
-//******************************************************************
-
-
-
+}
 
 //Parse the time function.
 function parseTime(time)
