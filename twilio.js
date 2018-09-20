@@ -1,4 +1,4 @@
-const config = require('./config.js');
+const config = require('.c/config.js');
 
 //***********TWILIO CONFIG****************************
 const accountSid = config.TWILIO_ACCOUNT_SID;
